@@ -2,6 +2,19 @@ import React from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { ArrowUpIcon } from 'lucide-react'
+
+export function ButtonDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-2 md:flex-row">
+      <Button variant="outline">Button</Button>
+      <Button variant="outline" size="icon" aria-label="Submit">
+        <ArrowUpIcon />
+      </Button>
+    </div>
+  )
+}
 
 export default function HomePage() {
   return (
@@ -26,6 +39,7 @@ export default function HomePage() {
         <span>tailwindcss</span>
         <span>=</span>
         <span>💕 </span>
+        <ButtonDemo/>
       </div>
       <div className="mt-1 w-full flex-wrap flex justify-center">
         <Link href="/next">Go to next page</Link>
