@@ -31,6 +31,10 @@ export function extractServices(ctx: ExtractContext): ServiceNode[] {
     const name = byExportName[0] ?? deriveServiceName(relPath, exportedNames)
     if (!name) continue
 
+    // Line of the named/derived export (best-effort), else top of file.
+    const decl = sf.getExportedDeclarations().get(name)?.[0]
+    const lineNumber = decl ? decl.getStartLineNumber() : 1
+
     const ie = ctx.importsByAbsPath.get(abs)
     const dependencies = ie
       ? dedupe(
@@ -46,7 +50,9 @@ export function extractServices(ctx: ExtractContext): ServiceNode[] {
     services.push({
       id: makeId('service', relPath, name),
       name,
+      type: 'service',
       filePath: relPath,
+      lineNumber,
       dependencies,
       referencedApis,
     })

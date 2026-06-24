@@ -3,6 +3,9 @@
 // normalized, engine-agnostic structures every downstream pipeline stage
 // (manifest, knowledge docs, embeddings, LanceDB) consumes. Nothing here leaks
 // the underlying parser (ts-morph) representation.
+//
+// Every discovered entity carries `id`, `name`, `filePath`, `lineNumber`, and a
+// non-empty `type` discriminator so findings are traceable back to source.
 
 export type AnalysisStatus = 'running' | 'completed' | 'failed'
 
@@ -27,10 +30,15 @@ export interface FileNode {
   hash: string
 }
 
+export type RouteKind = 'page' | 'layout' | 'route-element'
+
 export interface RouteNode {
   id: string
   name: string
+  type: RouteKind
   path: string
+  filePath: string
+  lineNumber: number
   sourceFile: string
   parentRoute: string | null
   layoutFile: string | null
@@ -43,34 +51,50 @@ export interface ComponentNode {
   name: string
   type: ComponentType
   filePath: string
+  lineNumber: number
   exports: string[]
   imports: string[]
+  /** Prop names (destructured) or the props parameter type text. */
+  props: string[]
+  isDefaultExport: boolean
 }
 
 export interface ServiceNode {
   id: string
   name: string
+  type: 'service'
   filePath: string
+  lineNumber: number
   dependencies: string[]
   referencedApis: string[]
 }
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS'
 
+export type ApiKind = 'route-handler' | 'fetch' | 'axios' | 'api-client'
+
 export interface ApiNode {
   id: string
+  name: string
+  type: ApiKind
   endpoint: string
   method: HttpMethod
   controller: string | null
   serviceRefs: string[]
+  filePath: string
+  lineNumber: number
   sourceFile: string
 }
 
 export interface ModelNode {
   id: string
+  name: string
+  type: 'model'
   entityName: string
   schemaName: string | null
   modelFile: string
+  filePath: string
+  lineNumber: number
   relationships: string[]
 }
 
@@ -78,18 +102,84 @@ export type UiElementKind = 'button' | 'form' | 'table' | 'dialog'
 
 export interface UiElementNode {
   id: string
+  name: string
+  type: UiElementKind
   kind: UiElementKind
   label: string
   filePath: string
+  lineNumber: number
   componentId: string | null
 }
 
-export interface NavigationEdge {
+// --- Forms ------------------------------------------------------------------
+
+export type FormType = 'form' | 'form-field' | 'react-hook-form' | 'formik'
+
+export interface FormNode {
   id: string
-  fromId: string
-  toId: string
-  /** The literal href / route target as found in source. */
-  target: string
+  name: string
+  type: FormType
+  filePath: string
+  lineNumber: number
+  fields: string[]
+}
+
+// --- Hooks ------------------------------------------------------------------
+
+export interface HookNode {
+  id: string
+  name: string
+  type: 'hook'
+  filePath: string
+  lineNumber: number
+  inputs: string[]
+  outputs: string[]
+  sideEffects: string[]
+}
+
+// --- State management -------------------------------------------------------
+
+export type StateKind =
+  | 'redux-slice'
+  | 'zustand-store'
+  | 'context'
+  | 'usestate-cluster'
+
+export interface StateNode {
+  id: string
+  name: string
+  type: StateKind
+  filePath: string
+  lineNumber: number
+  detail: string
+}
+
+// --- Event handlers ---------------------------------------------------------
+
+export interface EventHandlerNode {
+  id: string
+  name: string
+  type: 'event-handler'
+  event: string
+  handler: string
+  filePath: string
+  lineNumber: number
+}
+
+// --- Candidate business actions (pre-dedup) ---------------------------------
+
+export type CrudOp = 'create' | 'read' | 'update' | 'delete' | 'unknown'
+export type ActionSource = 'api' | 'form' | 'handler' | 'naming'
+
+export interface ActionCandidate {
+  id: string
+  name: string
+  type: 'action'
+  op: CrudOp
+  source: ActionSource
+  filePath: string
+  lineNumber: number
+  detail: string
 }
 
 // --- Relationship graph -----------------------------------------------------
@@ -137,6 +227,14 @@ export interface Relationship {
   type: GraphEdgeType
 }
 
+export interface NavigationEdge {
+  id: string
+  fromId: string
+  toId: string
+  /** The literal href / route target as found in source. */
+  target: string
+}
+
 // --- Aggregate snapshot + versioning ---------------------------------------
 
 /** The full normalized output of one analysis run (mirrors the JSON artifacts). */
@@ -148,6 +246,11 @@ export interface AnalysisSnapshot {
   services: ServiceNode[]
   apis: ApiNode[]
   models: ModelNode[]
+  forms: FormNode[]
+  hooks: HookNode[]
+  state: StateNode[]
+  eventHandlers: EventHandlerNode[]
+  actions: ActionCandidate[]
   uiElements: UiElementNode[]
   navigation: NavigationEdge[]
   relationships: Relationship[]

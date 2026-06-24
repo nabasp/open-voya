@@ -1,0 +1,63 @@
+{
+  "_meta": {
+    "revalidatedAfterFixes": true,
+    "method": "Read-only re-run of the corrected Stage 2 extraction logic (via tsx) against ~/OpenVoya/projects/react-image-compressor, plus tsc typecheck and source-line traceability checks. NOTE: the persisted artifacts under <userData>/analysis/<projectId>/v1/ are from the PRE-FIX pipeline run and remain stale until the Electron app re-runs Stage 2; the findings below reflect the corrected code's output, which those artifacts will match on the next run.",
+    "analyzedRepo": "~/OpenVoya/projects/react-image-compressor (14 files; 3 source .jsx files: App.jsx, index.jsx, components/ImageCompressor.jsx)",
+    "fixesApplied": [
+      "Default-exported components are now detected: extractComponents resolves the 'default' export key to its real declaration + name, and detects React.Component subclasses (incl. lowercase names) and JSX-returning function/arrow/memo components.",
+      "lineNumber added to every entry type (routes, components, services, apis, models, ui, forms, hooks, state, event-handlers, actions) via ts-morph getStartLineNumber()/computed offsets; a 'type' discriminator and 'name' added everywhere.",
+      "New extractors + artifacts: forms.json, hooks.json, state.json, actions-raw.json (plus internal event-handlers). react-router <Route path> and fetch/axios/api.* call sites now extracted.",
+      "Metrics summary now printed: Routes, Components, Forms, API Endpoints (+ Services/Hooks/State/Actions)."
+    ]
+  },
+  "fileExistence": {
+    "pass": true,
+    "issues": [
+      "All 8 spec artifacts are now emitted by the writer: routes.json, components.json, forms.json, apis.json, services.json, state.json, hooks.json, actions-raw.json (plus repository/files/models/navigation/relationships/graph/event-handlers).",
+      "Empty categories for THIS repo are genuine (verified by grep): routes (no router), forms (no <form>/useForm), apis (no fetch/axios), hooks (no custom use* hooks), state (no redux/zustand/context; <3 useState). components.json is now NON-empty (2 entries), resolving the prior unexplained-empty failure."
+    ]
+  },
+  "schemaConformance": {
+    "pass": true,
+    "issues": [
+      "Every entry now carries id, name, filePath, lineNumber, and a non-empty 'type'. Example component entry: {id:'component_…', name:'App', type:'arrow', filePath:'src/App.jsx', lineNumber:5, isDefaultExport:true, props:[], exports:['App'], imports:[…]}.",
+      "Category-specific metadata present: routes carry path; apis carry method+endpoint; hooks carry inputs/outputs/sideEffects; forms carry fields; state carries kind+detail; actions carry op+source."
+    ],
+    "sampledCount": 4,
+    "_sampledBreakdown": "react-image-compressor only yields 2 components + 2 event handlers as populated typed entries; sampled all of them. Larger schema coverage exercised against a synthetic Next.js fixture during development (routes/apis/services/models/ui/forms)."
+  },
+  "traceability": {
+    "pass": true,
+    "issues": [
+      "All sampled entries point to the correct source line: component 'App' src/App.jsx:5 = 'const App = () => <ImageCompressor />;'; component 'imageCompressor' src/components/ImageCompressor.jsx:7 = 'export default class imageCompressor extends React.Component {'; event onChange ImageCompressor.jsx:92 = 'onChange={e => this.handle(e)}'; event onClick :102 = 'onClick={e => this.click(e)}'. No out-of-range or wrong-file references."
+    ],
+    "sampledCount": 4
+  },
+  "countCrossValidation": {
+    "routes": { "reported": 0, "independentEstimate": 0 },
+    "components": { "reported": 2, "independentEstimate": 2 },
+    "apis": { "reported": 0, "independentEstimate": 0 },
+    "forms": { "reported": 0, "independentEstimate": 0 },
+    "notes": "components now matches ground truth exactly: grep finds 2 component declarations (App default arrow @ App.jsx:5, default class imageCompressor @ ImageCompressor.jsx:7) and components.json reports both — the prior 0-vs-2 systematic under-extraction is fixed. routes/apis/forms remain 0 and grep confirms 0 in source (no router, no fetch/axios, no <form>/useForm), so they are genuinely empty rather than missed."
+  },
+  "readOnlyGuarantee": {
+    "pass": true,
+    "issues": [
+      "git -C ~/OpenVoya/projects/react-image-compressor status --short is clean: no source files modified, added, or deleted. The re-run reads source via ts-morph only and writes nothing into the repo."
+    ]
+  },
+  "exclusionRules": {
+    "pass": true,
+    "issues": [
+      "No entry references node_modules/, dist/, build/, .next/, out/, or test files. The IGNORED_DIRS set (now incl. 'generated') excludes them at scan time.",
+      "Observation (unchanged, not a violation): the file inventory still captures all files (package-lock.json, README, public/* images) as 'file' nodes — by design, not breaching the node_modules/build/test exclusion."
+    ]
+  },
+  "rerunStability": {
+    "pass": true,
+    "exceptions": [],
+    "metricDrift": "Ran the corrected extraction twice against the same repo state: identical metrics (Routes 0, Components 2, Forms 0, APIs 0, Hooks 0, State 0, Events 2, Actions 0) and identical component ids across runs. Deterministic: YES. No unhandled exceptions or stack traces."
+  },
+  "overallStatus": "pass",
+  "summary": "The two blocking issues from the prior audit are fixed and verified: (1) default-exported components are now detected — components.json reports both App and imageCompressor with correct file:line, matching the grep ground truth of 2; and (2) every entry now carries lineNumber + type, the previously-missing forms/state/hooks/actions-raw artifacts are emitted, and a Routes/Components/Forms/API metrics summary is printed. Extraction is read-only (repo git-clean), deterministic across re-runs, traceable to exact source lines, and raised no exceptions. The only caveat: the persisted artifacts under userData are from the pre-fix run and will reflect these fixes after the app re-executes Stage 2."
+}

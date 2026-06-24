@@ -51,9 +51,13 @@ export function extractModels(ctx: ExtractContext): ModelNode[] {
 
       models.push({
         id: makeId('model', relPath, name),
+        name,
+        type: 'model',
         entityName: name,
         schemaName: null,
         modelFile: relPath,
+        filePath: relPath,
+        lineNumber: decl.getStartLineNumber(),
         relationships: entityRelationships(decl),
       })
     }
@@ -84,9 +88,13 @@ function parsePrisma(content: string, relPath: string): ModelNode[] {
     }
     out.push({
       id: makeId('model', relPath, entityName),
+      name: entityName,
+      type: 'model',
       entityName,
       schemaName: entityName,
       modelFile: relPath,
+      filePath: relPath,
+      lineNumber: content.slice(0, m.index).split('\n').length,
       relationships: Array.from(relationships),
     })
   }

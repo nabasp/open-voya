@@ -14,7 +14,12 @@ import { extractServices } from '../extractors/service.extractor'
 import { extractModels } from '../extractors/model.extractor'
 import { extractUiElements } from '../extractors/ui-element.extractor'
 import { extractNavigation } from '../extractors/navigation.extractor'
+import { extractForms } from '../extractors/form.extractor'
+import { extractHooks } from '../extractors/hook.extractor'
+import { extractState } from '../extractors/state.extractor'
+import { extractEventHandlers } from '../extractors/event-handler.extractor'
 import { analyzeDependencies } from '../analyzers/dependency.analyzer'
+import { analyzeActions } from '../analyzers/action.analyzer'
 import { buildRelationshipGraph } from '../analyzers/relationship-graph.builder'
 import { analysisRepository } from '../database/analysis.repository'
 import { artifactDir, writeArtifacts } from './artifact-writer'
@@ -59,7 +64,7 @@ export const analysisService = {
 
       // 3. Extraction
       info(log, 'Extracting routes...')
-      const routes = extractRoutes(files, repoRoot)
+      const routes = extractRoutes(ec)
       info(log, 'Extracting components...')
       const components = extractComponents(ec)
       info(log, 'Extracting APIs...')
@@ -68,12 +73,21 @@ export const analysisService = {
       const services = extractServices(ec)
       info(log, 'Extracting models...')
       const models = extractModels(ec)
+      info(log, 'Extracting forms...')
+      const forms = extractForms(ec)
+      info(log, 'Extracting hooks...')
+      const hooks = extractHooks(ec)
+      info(log, 'Extracting state management...')
+      const state = extractState(ec)
+      info(log, 'Extracting event handlers...')
+      const eventHandlers = extractEventHandlers(ec)
       const uiElements = extractUiElements(ec)
       const navigation = extractNavigation(ec, routes)
 
-      // 4. Relationships + graph
+      // 4. Relationships + graph + candidate actions
       info(log, 'Building relationship graph...')
       const fileRelationships = analyzeDependencies(ec)
+      const actions = analyzeActions(ec, { apis, forms, eventHandlers })
       const graph = buildRelationshipGraph({
         files,
         routes,
@@ -94,6 +108,11 @@ export const analysisService = {
         services,
         apis,
         models,
+        forms,
+        hooks,
+        state,
+        eventHandlers,
+        actions,
         uiElements,
         navigation,
         relationships: fileRelationships,
@@ -110,6 +129,13 @@ export const analysisService = {
         edgeCount: graph.edges.length,
       })
 
+      // Metrics summary (Definition of Done)
+      info(
+        log,
+        `Metrics — Routes: ${routes.length}, Components: ${components.length}, ` +
+          `Forms: ${forms.length}, API Endpoints: ${apis.length}, Services: ${services.length}, ` +
+          `Hooks: ${hooks.length}, State: ${state.length}, Actions(raw): ${actions.length}`
+      )
       success(
         log,
         `Analysis completed (v${version.analysisVersion}: ${files.length} files, ` +
@@ -141,6 +167,11 @@ export const analysisService = {
       services: read('services.json', []),
       apis: read('apis.json', []),
       models: read('models.json', []),
+      forms: read('forms.json', []),
+      hooks: read('hooks.json', []),
+      state: read('state.json', []),
+      eventHandlers: read('event-handlers.json', []),
+      actions: read('actions-raw.json', []),
       // UI elements are persisted as graph nodes (button/form/table/dialog), not
       // a standalone artifact, so they are surfaced through `graph` rather than here.
       uiElements: [],

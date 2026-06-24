@@ -111,7 +111,15 @@ export const analysisRepository = {
         insertFile.run({ analysisId, ...f })
       }
       for (const r of snapshot.routes) {
-        insertRoute.run({ analysisId, ...r })
+        insertRoute.run({
+          analysisId,
+          id: r.id,
+          name: r.name,
+          path: r.path,
+          sourceFile: r.sourceFile,
+          parentRoute: r.parentRoute,
+          layoutFile: r.layoutFile,
+        })
       }
       for (const c of snapshot.components) {
         insertComponent.run({

@@ -27,9 +27,12 @@ export function extractUiElements(ctx: ExtractContext): UiElementNode[] {
       const label = kind === 'button' ? buttonLabel(node) || tag : prettyLabel(tag, kind)
       elements.push({
         id: makeId('ui', relPath, kind, String(idx++)),
+        name: label,
+        type: kind,
         kind,
         label,
         filePath: relPath,
+        lineNumber: node.getStartLineNumber(),
         componentId: null,
       })
     }
