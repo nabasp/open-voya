@@ -2,6 +2,10 @@ import path from 'path'
 import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers/create-window'
+import { getDb } from './db/database'
+import { ensureWorkspace } from './modules/project-import/workspace.service'
+import { projectRepository } from './modules/project-import/project.repository'
+import { registerProjectImportIpc } from './modules/project-import/ipc'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -14,6 +18,12 @@ if (isProd) {
 ;(async () => {
   await app.whenReady()
 
+  // Initialize persistence + workspace, then reconcile any import that was
+  // interrupted by a previous crash/quit so the UI never shows a stuck spinner.
+  getDb()
+  ensureWorkspace()
+  projectRepository.reconcileStaleImports()
+
   const mainWindow = createWindow('main', {
     width: 1440,
     height: 900,
@@ -23,6 +33,8 @@ if (isProd) {
       preload: path.join(import.meta.dirname, 'preload.js'),
     },
   })
+
+  registerProjectImportIpc(() => mainWindow)
 
   if (isProd) {
     await mainWindow.loadURL('app://./dashboard')

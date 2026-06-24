@@ -4,6 +4,7 @@
 export type ProjectStatus = "ready" | "generating" | "error";
 
 export interface Project {
+  id?: string; // present for live (DB-backed) projects
   name: string;
   repo: string;
   status: ProjectStatus;

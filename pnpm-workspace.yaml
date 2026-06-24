@@ -1,4 +1,7 @@
 allowBuilds:
+  # Deny better-sqlite3's own (Node-ABI) build; it is rebuilt for the Electron
+  # ABI by `electron-builder install-app-deps` (the postinstall) instead.
+  better-sqlite3: false
   core-js-pure: true
   electron: true
   electron-winstaller: true

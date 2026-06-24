@@ -1,6 +1,10 @@
 appId: com.example.nextron
 productName: My Nextron App
 copyright: Copyright © 2026 Yoshihide Shiono
+# Compile native deps (better-sqlite3) from source against the Electron ABI
+# instead of pulling a Node-ABI prebuilt.
+buildDependenciesFromSource: true
+npmRebuild: true
 directories:
   output: dist
   buildResources: resources
@@ -9,4 +13,9 @@ files:
     filter:
       - package.json
       - app
+# better-sqlite3 is a native module: keep its .node binary outside the asar so it
+# can be dlopen'd at runtime. electron-builder install-app-deps (postinstall)
+# rebuilds it against the Electron ABI; its node_modules are bundled as a prod dep.
+asarUnpack:
+  - "**/node_modules/better-sqlite3/**"
 publish: null
