@@ -7,7 +7,7 @@ export const BUILD_LOG: LogLine[] = [
   { text: "> ts-morph: parsing src/**/*.tsx", kind: "accent" },
   { text: "  Found 12 routes", kind: "muted" },
   { text: "  Parsing Billing.tsx", kind: "muted" },
-  { text: "> GitNexus: building dependency graph", kind: "accent" },
+  { text: "> ts-morph: building relationship graph", kind: "accent" },
   { text: "> Injecting data-ai-id attributes…", kind: "accent" },
   { text: "  button-billing-0", kind: "muted" },
   { text: "  nav-link-settings-0", kind: "muted" },

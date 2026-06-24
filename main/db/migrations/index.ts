@@ -3,6 +3,7 @@ import type DatabaseType from 'better-sqlite3'
 import { migration001 } from './001_init_projects'
 import { migration002 } from './002_project_logs'
 import { migration003 } from './003_add_progress_key'
+import { migration004 } from './004_code_analysis'
 
 export interface Migration {
   version: number
@@ -10,7 +11,7 @@ export interface Migration {
 }
 
 // Ordered list of schema migrations. Append new ones with incrementing versions.
-const MIGRATIONS: Migration[] = [migration001, migration002, migration003]
+const MIGRATIONS: Migration[] = [migration001, migration002, migration003, migration004]
 
 /**
  * Hand-rolled migration runner keyed on SQLite's `user_version` pragma.

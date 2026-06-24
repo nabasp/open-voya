@@ -49,14 +49,18 @@ export default function BuildPage() {
     typeof router.query.projectId === "string" ? router.query.projectId : undefined;
   const live = Boolean(projectId);
 
-  const { logs: liveLogs, status: liveStatus } = useImportLogs(projectId);
+  const { logs: liveLogs, status: liveStatus, stageStates } = useImportLogs(projectId);
   const [project, setProject] = useState<Project | null>(null);
   const [history, setHistory] = useState<BuildLogEvent[]>([]);
   const [selectedStageId, setSelectedStageId] = useState<string | undefined>(undefined);
+  // While true, the view auto-follows the running stage; a manual stage click
+  // pins the selection and stops following.
+  const [followActive, setFollowActive] = useState(true);
 
   // Load the project + persisted log history whenever the route changes.
   useEffect(() => {
     setSelectedStageId(undefined);
+    setFollowActive(true);
     setHistory([]);
     if (!projectId || !projectIpc.available()) {
       setProject(null);
@@ -87,26 +91,54 @@ export default function BuildPage() {
     return out;
   }, [history, liveLogs]);
 
-  const firstState: StageRow["state"] =
-    effectiveStatus === "ready"
-      ? "done"
-      : effectiveStatus === "failed"
-        ? "failed"
-        : "active";
+  // Stages that produced at least one log line have run (used to reconstruct
+  // state when replaying a finished/failed project that emitted no live events
+  // this session).
+  const stagesWithLogs = useMemo(() => {
+    const s = new Set<string>();
+    for (const l of mergedLogs) if (l.stageId) s.add(l.stageId);
+    return s;
+  }, [mergedLogs]);
+
+  // Resolve each row's state: live per-stage events win; otherwise fall back to
+  // log history + overall status. Only stages that actually ran are marked done.
+  const resolveState = (id: string, i: number): StageRow["state"] => {
+    const live = stageStates[id];
+    if (live) return live;
+    if (effectiveStatus === "ready" || effectiveStatus === "failed") {
+      return stagesWithLogs.has(id) ? "done" : "pending";
+    }
+    // importing / building, before this stage emitted an event
+    if (stagesWithLogs.has(id)) return "done";
+    return i === 0 ? "active" : "pending";
+  };
 
   const liveStages: StageRow[] = stageDefs.map((def, i) => ({
     id: def.id,
     label: def.label,
-    state: i === 0 ? firstState : "pending",
+    state: resolveState(def.id, i),
   }));
-  const overall =
-    effectiveStatus === "ready"
-      ? 100
-      : effectiveStatus === "failed"
-        ? 0
-        : firstState === "done"
-          ? 20
-          : 6;
+
+  const doneCount = liveStages.filter((s) => s.state === "done").length;
+  const hasActive = liveStages.some((s) => s.state === "active");
+  const overall = Math.min(
+    100,
+    Math.round(((doneCount + (hasActive ? 0.5 : 0)) / stageDefs.length) * 100)
+  );
+
+  // The currently running stage (the one to auto-follow).
+  const activeStageId = liveStages.find((s) => s.state === "active")?.id;
+
+  // Auto-advance the selection to the running stage while following.
+  useEffect(() => {
+    if (followActive && activeStageId) setSelectedStageId(activeStageId);
+  }, [followActive, activeStageId]);
+
+  // A manual stage click pins the selection and stops auto-following.
+  const handleSelectStage = (id: string) => {
+    setFollowActive(false);
+    setSelectedStageId(id);
+  };
 
   const selected = selectedStageId ?? firstId;
   const shownLines: LogRow[] = mergedLogs
@@ -125,7 +157,7 @@ export default function BuildPage() {
               stages={liveStages}
               overall={overall}
               selectedId={selected}
-              onSelectStage={setSelectedStageId}
+              onSelectStage={handleSelectStage}
             />
           ) : (
             <PipelineStageList />

@@ -9,7 +9,7 @@ export interface StageDef {
 }
 
 const FUTURE_STAGES: StageDef[] = [
-  { id: "gitnexus-analysis", label: "GitNexus analysis" },
+  { id: "tsmorph-analysis", label: "ts-morph analysis" },
   { id: "generate-manifest", label: "Generate manifest" },
   { id: "inject-data-ai-id", label: "Inject data-ai-id" },
   { id: "generate-knowledge-docs", label: "Generate knowledge docs" },

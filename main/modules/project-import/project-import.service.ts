@@ -15,6 +15,9 @@ import { emitLog, emitListChanged, emitStatus } from './log-emitter'
 import { runPipeline } from './pipeline/pipeline-engine'
 import { cloneStage } from './pipeline/clone-stage'
 import { copyStage } from './pipeline/copy-stage'
+import { tsmorphAnalysisStage } from './pipeline/tsmorph-analysis-stage'
+import { analysisRepository } from '../code-analysis/database/analysis.repository'
+import { removeArtifacts } from '../code-analysis/services/artifact-writer'
 import type { ImportRequest, StartResult, ValidateResult } from './ipc-contract'
 import type { LogFn, PipelineContext } from './types'
 
@@ -94,6 +97,10 @@ export const projectImportService = {
         removeDir(project.localProjectPath)
       }
     }
+    // Remove analysis rows (they FK-reference projects) + their on-disk
+    // artifacts before deleting the project row.
+    analysisRepository.deleteForProject(id)
+    removeArtifacts(id)
     projectRepository.deleteProject(id)
     emitListChanged(wc)
     return { ok: true }
@@ -103,7 +110,10 @@ export const projectImportService = {
     const project = projectRepository.get(projectId)
     if (!project) return
 
-    const stages = req.sourceType === 'git' ? [cloneStage] : [copyStage]
+    const stages =
+      req.sourceType === 'git'
+        ? [cloneStage, tsmorphAnalysisStage]
+        : [copyStage, tsmorphAnalysisStage]
     // Each log line is tagged with the stage currently running, then both
     // streamed live and persisted for history/replay.
     let currentStageId: string | undefined = stages[0]?.id

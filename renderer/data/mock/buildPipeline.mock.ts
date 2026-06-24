@@ -4,7 +4,7 @@ import type { BuildStats, PipelineStage } from "@/types";
 // (The design's live setInterval simulation is intentionally not ported.)
 export const PIPELINE_STAGES: PipelineStage[] = [
   { label: "Clone repository", time: "1.2s", state: "done" },
-  { label: "GitNexus analysis", time: "2.1s", state: "done" },
+  { label: "ts-morph analysis", time: "2.1s", state: "done" },
   { label: "Generate manifest", time: "0.6s", state: "done" },
   { label: "Generate knowledge docs", time: "4.2s", state: "done" },
   { label: "Embed (bge-small-en)", time: "6.7s", state: "done" },

@@ -6,6 +6,7 @@ import { getDb } from './db/database'
 import { ensureWorkspace } from './modules/project-import/workspace.service'
 import { projectRepository } from './modules/project-import/project.repository'
 import { registerProjectImportIpc } from './modules/project-import/ipc'
+import { registerCodeAnalysisIpc } from './modules/code-analysis/ipc/ipc'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -35,6 +36,7 @@ if (isProd) {
   })
 
   registerProjectImportIpc(() => mainWindow)
+  registerCodeAnalysisIpc()
 
   if (isProd) {
     await mainWindow.loadURL('app://./dashboard')
