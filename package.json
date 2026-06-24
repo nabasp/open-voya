@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "my-nextron-app",
+  "name": "open-voya",
   "description": "My application description",
   "version": "1.0.0",
   "author": "Yoshihide Shiono <shiono.yoshihide@gmail.com>",
@@ -16,6 +16,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
+    "cytoscape": "^3.34.0",
     "date-fns": "^4.4.0",
     "electron-serve": "^3.0.0",
     "electron-store": "^11.0.2",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",
+    "@types/cytoscape": "^3.31.0",
     "@types/node": "^20.11.16",
     "@types/react": "^19.2.14",
     "electron": "^41.0.3",

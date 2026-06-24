@@ -44,91 +44,94 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* open voya semantic surfaces & status colors */
+  --color-surface: var(--surface);
+  --color-surface-inset: var(--surface-inset);
+  --color-chrome: var(--chrome);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+
+  --font-mono: var(--font-space-mono), ui-monospace, "SFMono-Regular", monospace;
 }
 
+/*
+ * "open voya" cream palette mapped onto shadcn's CSS variables.
+ * Hex values lifted from AgentFrog Desktop.dc.html.
+ */
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #f3f1ea;
+  --foreground: #14130f;
+
+  --card: #efece3;
+  --card-foreground: #14130f;
+
+  --popover: #f7f6f2;
+  --popover-foreground: #14130f;
+
+  --primary: #e50914;
+  --primary-foreground: #f3f1ea;
+
+  --secondary: #ece9e0;
+  --secondary-foreground: #14130f;
+
+  --muted: #e7e2d6;
+  --muted-foreground: #6b6a64;
+
+  --accent: #e3dfd5;
+  --accent-foreground: #14130f;
+
+  --destructive: #e0402a;
+  --destructive-foreground: #f3f1ea;
+
+  --border: #dbd8ce;
+  --input: #dbd8ce;
+  --ring: #e50914;
+
+  /* extra named surfaces used across screens */
+  --surface: #f7f6f2;        /* inner tiles / detail cards */
+  --surface-inset: #e7e2d6;  /* live log + raw JSON <pre> */
+  --chrome: #ece9e0;         /* title bar, sidebar, status bar */
+
+  --success: #1e7a3d;
+  --warning: #c98a1b;
+  --error: #e0402a;
+
+  --chart-1: #e50914;
+  --chart-2: #c98a1b;
+  --chart-3: #1e7a3d;
+  --chart-4: #3b6fa0;
+  --chart-5: #6b6a64;
+
+  --sidebar: #ece9e0;
+  --sidebar-foreground: #14130f;
+  --sidebar-primary: #e50914;
+  --sidebar-primary-foreground: #f3f1ea;
+  --sidebar-accent: #e3dfd5;
+  --sidebar-accent-foreground: #14130f;
+  --sidebar-border: #d7d4c9;
+  --sidebar-ring: #e50914;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html,
+  body,
+  #__next {
+    height: 100%;
+  }
   body {
     @apply bg-background text-foreground;
-    @apply bg-gray-900 text-white;
-
+    font-family: var(--font-space-mono), ui-monospace, "SFMono-Regular", monospace;
+    -webkit-font-smoothing: antialiased;
   }
-}
-
-
-@layer components {
-  .btn-blue {
-    @apply text-white font-bold px-4 py-2 rounded bg-blue-600 hover:bg-blue-500;
+  ::selection {
+    background: #e50914;
+    color: #f3f1ea;
   }
 }
